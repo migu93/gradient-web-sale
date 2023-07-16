@@ -12,12 +12,8 @@ function App() {
         <ThemeProvider theme={darkTheme}>
             <Header/>
             <Routes>
-                {routes.map((route: RouteObject, index: number) => ( // Add explicit type annotation
-                    <Route
-                        key={index}
-                        path={route.path}
-                        element={route.element}
-                    />
+                {routes.map((route, index) => (
+                    <Route key={index} path={route.path} element={route.element} />
                 ))}
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>
