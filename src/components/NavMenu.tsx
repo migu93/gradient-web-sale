@@ -25,7 +25,7 @@ const NavMenu: React.FC = () => {
         setAnchorElNav(null);
     };
     return (
-        <AppBar position="static">
+        <AppBar position="static" elevation={2}>
             <Toolbar disableGutters>
                 <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, mx: 5, justifyContent: 'flex-end' }}>
                     <IconButton
