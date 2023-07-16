@@ -4,11 +4,13 @@ import darkTheme from "./design/darkTheme";
 import '@fontsource/roboto'; // Импортируем шрифт Roboto
 import {Routes, Route, Navigate, RouteObject} from 'react-router-dom'
 import routes from "./config/routes";
+import Header from "./components/Header";
 
 function App() {
   return (
     <div className="App">
         <ThemeProvider theme={darkTheme}>
+            <Header/>
             <Routes>
                 {routes.map((route: RouteObject, index: number) => ( // Add explicit type annotation
                     <Route
