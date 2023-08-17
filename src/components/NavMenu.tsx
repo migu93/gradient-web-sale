@@ -3,8 +3,7 @@ import {
     AppBar,
     Box,
     Button,
-    Container,
-    IconButton, Link,
+    IconButton,
     Menu,
     MenuItem,
     Toolbar,
@@ -14,7 +13,6 @@ import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import {useState} from "react";
 import headerLinks from '../config/headerLinks';
-import logo from '../images/logo/NPO-Logo for navMenu.svg'
 
 const NavMenu: React.FC = () => {
     const [anchorElNav, setAnchorElNav] = useState<HTMLElement | null>(null);
@@ -27,7 +25,7 @@ const NavMenu: React.FC = () => {
     return (
         <AppBar position="static" elevation={2}>
             <Toolbar disableGutters>
-                <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, mx: 5, justifyContent: 'flex-end' }}>
+                <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, mx: 5 }}>
                     <IconButton
                             size="medium"
                             aria-label="account of current user"
@@ -66,7 +64,7 @@ const NavMenu: React.FC = () => {
                         </Menu>
                     </Box>
 
-                    <Box marginLeft={5} sx={{ flexGrow: 1, gap: 3, display: { xs: 'none', md: 'flex' } }}>
+                    <Box justifyContent={'center'} sx={{ flexGrow: 1, gap: 3, display: { xs: 'none', md: 'flex' } }}>
                         {headerLinks.map((page) => (
                             <Button component={RouterLink} to={page.path} color="inherit" variant="text">
                                 <Typography textAlign="center">{page.name}</Typography>
