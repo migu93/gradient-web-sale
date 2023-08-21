@@ -1,11 +1,19 @@
 import React from 'react';
+import CarouselMp from "../components/Carousel";
+import CategoriesCards from "../components/CategoriesCards";
+import { Typography, Grid, Container } from '@mui/material';
 
 const MainPage: React.FC = () => {
     return (
-        <div>
-            <h1>Main Page</h1>
-    <p>This is the main page content.</p>
-    </div>
+        <>
+            <CarouselMp/>
+                <Grid marginBottom={5 }>
+                    <Typography variant="h4" align="center">
+                        Геодезическое оборудование
+                    </Typography>
+                </Grid>
+            <CategoriesCards/>
+        </>
 );
 }
 

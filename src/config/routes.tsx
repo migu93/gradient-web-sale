@@ -4,6 +4,7 @@ import ContactPage from '../pages/ContactPage';
 import CatalogPage from "../pages/CatalogPage";
 import AboutCompanyPage from "../pages/AboutCompanyPage";
 import ServicePage from "../pages/ServicePage";
+import AdminPanel from "../pages/Admin/AdminPanel";
 
 const routes: RouteObject[] = [
     {
@@ -25,6 +26,10 @@ const routes: RouteObject[] = [
     {
         path: 'services',
         element: <ServicePage/>
+    },
+    {
+        path: 'admin',
+        element: <AdminPanel/>
     },
 ];
 export default routes;

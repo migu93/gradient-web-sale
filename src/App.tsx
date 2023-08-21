@@ -4,7 +4,7 @@ import darkTheme from "./design/darkTheme";
 import '@fontsource/roboto'; // Импортируем шрифт Roboto
 import {Routes, Route, Navigate, RouteObject} from 'react-router-dom'
 import routes from "./config/routes";
-import Header from "./components/Header";
+import Header from "./components/Header/Header";
 
 function App() {
   return (
