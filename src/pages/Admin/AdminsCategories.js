@@ -1,5 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import List from "@mui/material/List";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 import {
     Avatar,
     IconButton,
@@ -67,10 +71,15 @@ const AdminsCategories = () => {
                     prevCategories.map((cat) => (cat._id === data._id ? data : cat))
                 );
                 setModalOpen(false);
+
+                // Уведомление об успешном сохранении
+                toast.success('Категория успешно сохранена!');
             })
             .catch((error) => {
                 console.error('An error occurred:', error);
-                alert('Произошла ошибка при сохранении изменений. Пожалуйста, попробуйте еще раз.');
+
+                // Уведомление об ошибке
+                toast.error('Произошла ошибка при сохранении изменений. Пожалуйста, попробуйте еще раз.');
             });
     };
 
@@ -157,6 +166,7 @@ const AdminsCategories = () => {
                     </Button>
                 </Box>
             </Modal>
+            <ToastContainer />
         </>
     );
 };
