@@ -19,6 +19,7 @@ import Typography from '@mui/material/Typography';
 import CategoryIcon from '@mui/icons-material/Category';
 import {useState} from "react";
 import AdminsCategories from "./AdminsCategories";
+import ImageUploader from "./ImageUploader";
 
 const drawerWidth = 240;
 
@@ -47,7 +48,7 @@ function ResponsiveDrawer(props) {
     const renderContent = () => {
         switch (activeIndex) {
             case 0: return <AdminsCategories/>;
-            case 1: return <div>Контент в разработке</div>;
+            case 1: return <ImageUploader/>;
 
             default: return null;
         }

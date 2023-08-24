@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import List from "@mui/material/List";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import CloseIcon from '@mui/icons-material/Close';
 
 import {
     Avatar,
@@ -13,10 +13,23 @@ import {
     Modal,
     TextField,
     Button,
-    Typography, Box
+    Typography,
+    Box,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Grid,
+    DialogTitle,
+    DialogContent,
+    Dialog,
+    ImageList,
+    ImageListItem
 } from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
 import EditIcon from '@mui/icons-material/Edit';
+import axios from "axios";
+import * as PropTypes from "prop-types";
 
 function DeleteIcon() {
     return null;
@@ -27,23 +40,64 @@ const AdminsCategories = () => {
     const [hoveredCategory, setHoveredCategory] = useState(null);
     const [categories, setCategories] = useState([]);
     const [isModalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState('edit'); // 'edit' или 'add'
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [availableImages, setAvailableImages] = useState([]);
+    const [isImageModalOpen, setImageModalOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+
 
     const handleMouseEnter = (id) => {
         setTimeout(() => {
             setHoveredCategory(id);
         }, 1000); // Увеличенный вариант будет показан через 1 секунду
     };
+    useEffect(() => {
+        fetch('http://localhost:5001/images/get-list-images')
+            .then((res) => res.json())
+            .then((data) => setAvailableImages(data))
+            .catch((error) => console.error('An error occurred:', error));
+    }, []);
+
 
     const handleMouseLeave = () => {
         setHoveredCategory(null);
     };
 
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+
+        axios.post('http://localhost:5001/images/upload', formData)
+            .then((response) => {
+                const imageUrl = response.data.imageUrl;
+                setSelectedCategory((prevCategory) => ({
+                    ...prevCategory,
+                    imageUrl
+                }));
+                // Добавьте новое изображение в список доступных изображений
+                setAvailableImages((prevImages) => [...prevImages, imageUrl.split('/uploads/')[1]]);
+            })
+            .catch((error) => {
+                console.error('Error uploading image:', error);
+            });
+    };
+
+
     // Открыть модальное окно
     const handleEditClick = (category) => {
         setSelectedCategory(category);
+        setModalMode('edit');
         setModalOpen(true);
     };
+
+    const handleAddClick = () => {
+        setSelectedCategory(null);
+        setModalMode('add');
+        setModalOpen(true);
+    };
+
 
     // Закрыть модальное окно
     const handleCloseModal = () => {
@@ -59,8 +113,13 @@ const AdminsCategories = () => {
 
     // Обработать отправку формы
     const handleSave = () => {
-        fetch(`http://localhost:5001/categories/update${selectedCategory._id}`, {
-            method: 'PUT',
+        const url = modalMode === 'edit'
+            ? `http://localhost:5001/categories/update/${selectedCategory._id}`
+            : 'http://localhost:5001/categories/create';
+        const method = modalMode === 'edit' ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(selectedCategory),
         })
@@ -132,6 +191,9 @@ const AdminsCategories = () => {
                         <IconButton edge="end" aria-label="edit" onClick={() => handleEditClick(category)}>
                             <EditIcon />
                         </IconButton>
+                        <Button variant="contained" color="primary" onClick={handleAddClick} style={{ marginBottom: '20px' }}>
+                            Добавить категорию
+                        </Button>
                     </ListItem>
                 ))}
             </List>
@@ -156,16 +218,67 @@ const AdminsCategories = () => {
                     }}
                 >
                     <Typography variant="h6" gutterBottom>
-                        Редактировать категорию
+                        {modalMode === 'edit' ? 'Редактировать категорию' : 'Добавить категорию'}
                     </Typography>
                     <TextField sx={{marginY: 1}} label="Название" fullWidth value={selectedCategory?.name || ''} onChange={(e) => handleInputChange(e, 'name')} />
                     <TextField sx={{marginY: 1}} label="URL изображения" fullWidth value={selectedCategory?.imageUrl || ''} onChange={(e) => handleInputChange(e, 'imageUrl')} />
                     <TextField sx={{marginY: 1}} label="URL категории" fullWidth value={selectedCategory?.categoryUrl || ''} onChange={(e) => handleInputChange(e, 'categoryUrl')} />
+                    <FormControl fullWidth variant="outlined" style={{ marginBottom: '20px' }}>
+                        <InputLabel>Изображение</InputLabel>
+                        <Select
+                            value={selectedCategory?.imageUrl || ''}
+                            onChange={(e) => handleInputChange(e, 'imageUrl')}
+                            label="Изображение"
+                        >
+                            {availableImages.map((image) => (
+                                <MenuItem key={image} value={`/uploads/${image}`}>
+                                    {image}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <Button variant="contained" color="primary" onClick={() => setImageModalOpen(true)}>
+                        Выбрать изображение
+                    </Button>
+
                     <Button variant="contained" color="primary" onClick={handleSave}>
                         Сохранить
                     </Button>
                 </Box>
             </Modal>
+
+
+            <Dialog open={isImageModalOpen} onClose={() => setImageModalOpen(false)} fullWidth maxWidth="md">
+                <DialogTitle>
+                    Выберите изображение
+                    <IconButton style={{ position: 'absolute', right: 10, top: 10 }} onClick={() => setImageModalOpen(false)}>
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent>
+                    <ImageList cellHeight={160} cols={3}>
+                        {availableImages.map((image) => (
+                            <ImageListItem key={image} cols={1}>
+                                <img
+                                    src={`/uploads/${image}`}
+                                    alt={image}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => {
+                                        handleInputChange({ target: { value: `/uploads/${image}` } }, 'imageUrl');
+                                        setImageModalOpen(false);
+                                    }}
+                                />
+                            </ImageListItem>
+                        ))}
+                    </ImageList>
+                    <input type="file" onChange={handleImageUpload} style={{ display: 'none' }} id="upload-button-file" />
+                    <label htmlFor="upload-button-file">
+                        <Button variant="contained" color="primary" component="span" style={{ marginTop: '20px' }}>
+                            Загрузить новое изображение
+                        </Button>
+                    </label>
+                </DialogContent>
+            </Dialog>
             <ToastContainer />
         </>
     );
