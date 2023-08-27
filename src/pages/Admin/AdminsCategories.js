@@ -9,17 +9,14 @@ import {
     ListItem,
     Tooltip,
     ListItemAvatar,
-    Button, CardMedia
+    Button, CardMedia, Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Typography
 } from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
 import EditIcon from '@mui/icons-material/Edit';
 import axios from "axios";
-import * as PropTypes from "prop-types";
 import CategoryModal from "./CategoryModal";
+import DeleteIcon from '@mui/icons-material/Delete';
 
-function DeleteIcon() {
-    return null;
-}
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 const AdminsCategories = () => {
@@ -29,6 +26,25 @@ const AdminsCategories = () => {
     const [availableImages, setAvailableImages] = useState([]);
     const [hoveredCategory, setHoveredCategory] = useState(null);
     const [categories, setCategories] = useState([]);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+    const handleDeleteClick = (category) => {
+        setSelectedCategory(category);
+        setDeleteModalOpen(true);
+    };
+
+    const handleDeleteCategory = () => {
+        axios.delete(`${BASE_URL}/categories/del/${selectedCategory._id}`)
+            .then(response => {
+                toast.success('Категория успешно удалена!');
+                setDeleteModalOpen(false);
+                fetchCategories();
+            })
+            .catch(error => {
+                toast.error('Произошла ошибка при удалении категории.');
+            });
+    };
+
 
 
     const handleSaveCategory = (categoryData) => {
@@ -104,7 +120,7 @@ const AdminsCategories = () => {
     }, []);
 
     useEffect(() => {
-        fetch('http://localhost:5001/images/get-all') // Используйте правильный URL, если он отличается
+        fetch(`${BASE_URL}/images/get-all/categories`) // Используйте правильный URL, если он отличается
             .then((res) => res.json())
             .then((data) => {
                 setAvailableImages(data);
@@ -114,15 +130,13 @@ const AdminsCategories = () => {
 
     return (
         <>
+            <Typography>
+                Категории товаров
+            </Typography>
             <List dense={false}>
                 {categories.map((category) => (
                     <ListItem
                         key={category._id}
-                        secondaryAction={
-                            <IconButton edge="end" aria-label="delete">
-                                <DeleteIcon />
-                            </IconButton>
-                        }
                     >
                         <ListItemAvatar>
                             <Tooltip
@@ -149,9 +163,14 @@ const AdminsCategories = () => {
                             primary={category.name}
                             secondary={category.categoryUrl} // Можно добавить вторичный текст, если это необходимо
                         />
-                        <IconButton edge="end" aria-label="edit" onClick={() => handleEditClick(category)}>
-                            <EditIcon />
-                        </IconButton>
+                        <Box sx={{gap: 1}}>
+                            <IconButton edge="end" aria-label="edit" onClick={() => handleEditClick(category)}>
+                                <EditIcon />
+                            </IconButton>
+                            <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteClick(category)}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </Box>
                     </ListItem>
                 ))}
             </List>
@@ -168,6 +187,27 @@ const AdminsCategories = () => {
                     onSave={handleSaveCategory}
                 />
             )}
+
+            <Dialog
+                open={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+            >
+                <DialogTitle>Подтверждение</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Вы точно хотите удалить категорию {selectedCategory?.name}?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDeleteCategory} color="success" variant={'contained'} autoFocus>
+                        Да
+                    </Button>
+                    <Button onClick={() => setDeleteModalOpen(false)} color="primary" variant={'contained'}>
+                        Нет
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             <ToastContainer />
         </>
     );

@@ -9,16 +9,18 @@ import {
     InputLabel,
     Select,
     MenuItem,
-    Grid, IconButton
+    Grid, IconButton, Typography
 } from "@mui/material";
 import ImagePickerModal from "./ImagePickerModal";
 import CloseIcon from "@mui/icons-material/Close";
 import ImageIcon from '@mui/icons-material/Image';
 
+
 const CategoryModal = ({ open, mode, category, images, onClose, onSave }) => {
     const [selectedImage, setSelectedImage] = React.useState(category?.imageUrl || "");
     const [name, setName] = React.useState(category?.name || "");
     const [categoryUrl, setCategoryUrl] = React.useState(category?.categoryUrl || "");
+    const [isImageSelected, setImageSelected] = React.useState(false);
 
     const [imagePickerOpen, setImagePickerOpen] = React.useState(false);
 
@@ -81,6 +83,7 @@ const CategoryModal = ({ open, mode, category, images, onClose, onSave }) => {
                                 Выбрать изображение
                                 <ImageIcon sx={{marginLeft: 1}}/>
                             </Button>
+                            {isImageSelected && <Typography variant="body2" color="textSecondary" sx={{ marginLeft: 2 }}>изображение выбрано</Typography>}
                         </Grid>
                     </Grid>
                     <Grid item xs={12}>
@@ -96,6 +99,7 @@ const CategoryModal = ({ open, mode, category, images, onClose, onSave }) => {
                 images={images}
                 onClose={() => setImagePickerOpen(false)}
                 onSelect={handleImageSelect}
+                onImageSelect={() => setImageSelected(true)}
             />
         </Dialog>
     );
