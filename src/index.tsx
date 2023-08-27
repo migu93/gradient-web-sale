@@ -1,3 +1,4 @@
+import './utils/axiosConfig'; // Импорт для применения настроек
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './design/index.css';

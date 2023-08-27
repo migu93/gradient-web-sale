@@ -15,9 +15,18 @@ const Categories = () => {
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5001/categories/get-all')
-            .then((response) => response.json())
-            .then((data) => setCategories(data));
+        fetch(`${process.env.REACT_APP_BASE_URL}/categories/get-all`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok, status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => setCategories(data))
+            .catch((error) => {
+                console.error('Error fetching categories:', error);
+                // Здесь вы можете добавить дополнительную обработку ошибок, например, установить состояние ошибки
+            });
     }, []);
 
     return (
@@ -26,12 +35,12 @@ const Categories = () => {
                 {categories.map((category) => (
                     <Grid item xs={12} sm={6} md={3}>
                         <Box>
-                            <Card sx={{minWidth:250, maxHeight: 210, marginBottom: 10}}>
+                            <Card sx={{minWidth:250, maxHeight: 210, marginBottom: 5}}>
                                 <CardActionArea href={category.categoryUrl}>
                                     <CardMedia sx={{minHeight: 150, }}
                                         component="img"
                                         height="140"
-                                        image={category.imageUrl}
+                                               image={`${process.env.REACT_APP_BASE_URL}${category.imageUrl}`}
                                         alt="green iguana"
 
                                     />
