@@ -1,6 +1,6 @@
 import React from 'react';
 import CarouselMp from "../components/Carousel";
-import CategoriesCards from "../components/CategoriesCards";
+import CategoriesCards from "../components/Catalog/CategoriesCards";
 import { Typography, Grid, Container } from '@mui/material';
 
 const MainPage: React.FC = () => {

@@ -15,9 +15,10 @@ const darkTheme = createTheme({
             styleOverrides: {
                 root: {
                     color: '#565656',
-                    textDecorationColor: '#a4a4a4', // Add the desired underline color here
+                    textDecoration: 'none',
                     '&:hover': {
-                        textDecorationColor: '#000000', // Also update the underline color on hover
+                        color: 'red',
+                        transition: 'color 0.3s',
                     },
                 },
             },

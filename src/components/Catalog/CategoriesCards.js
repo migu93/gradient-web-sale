@@ -36,7 +36,7 @@ const Categories = () => {
                     <Grid item xs={12} sm={6} md={3}>
                         <Box>
                             <Card sx={{minWidth:250, maxHeight: 210, marginBottom: 5}}>
-                                <CardActionArea href={category.categoryUrl}>
+                                <CardActionArea href={`/catalog${category.categoryUrl}`}>
                                     <CardMedia sx={{minHeight: 150, }}
                                         component="img"
                                         height="140"
