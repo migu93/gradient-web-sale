@@ -15,6 +15,7 @@ const darkTheme = createTheme({
             styleOverrides: {
                 root: {
                     color: '#565656',
+                    cursor: 'pointer',
                     textDecoration: 'none',
                     '&:hover': {
                         color: 'red',

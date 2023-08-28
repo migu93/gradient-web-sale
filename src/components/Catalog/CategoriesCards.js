@@ -31,18 +31,17 @@ const Categories = () => {
 
     return (
         <Container maxWidth={"lg"}>
-            <Grid container spacing={10}>
+            <Grid container spacing={5}>
                 {categories.map((category) => (
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid item xs={6} sm={6} md={3}> {/* Изменено значение xs с 12 на 6 */}
                         <Box>
-                            <Card sx={{minWidth:250, maxHeight: 210, marginBottom: 5}}>
+                            <Card sx={{maxHeight: 210, marginBottom: 5}}>
                                 <CardActionArea href={`/catalog${category.categoryUrl}`}>
                                     <CardMedia sx={{minHeight: 150, }}
-                                        component="img"
-                                        height="140"
+                                               component="img"
+                                               height="140"
                                                image={`${process.env.REACT_APP_BASE_URL}${category.imageUrl}`}
-                                        alt="green iguana"
-
+                                               alt="green iguana"
                                     />
                                     <CardContent>
                                         <Typography gutterBottom sx={{fontSize: 16}} textAlign={'center'} component="div">

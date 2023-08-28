@@ -7,6 +7,7 @@ import routes from "./config/routes";
 import Header from "./components/Header/Header";
 import { useLocation } from 'react-router-dom';
 import Breadcrumbs from "./components/Breadcrumbs";
+import Footer from "./components/Footer/Footer"
 
 function App() {
     const location = useLocation();
@@ -22,6 +23,7 @@ function App() {
                 ))}
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>
+            <Footer/>
         </ThemeProvider>
     </div>
   );
