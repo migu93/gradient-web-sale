@@ -1,8 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Dialog, DialogTitle, Grid, Card, CardMedia, Typography, IconButton, Button, Box} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
-import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
@@ -12,6 +11,8 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 const ImagePickerModal = ({ open, images, onClose, onSelect, onImageSelect  }) => {
 
     const [selectedFile, setSelectedFile] = React.useState(null);
+    const [imageUrl, setImageUrl] = useState(null);
+
 
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
@@ -40,6 +41,8 @@ const ImagePickerModal = ({ open, images, onClose, onSelect, onImageSelect  }) =
                 setLocalImages(prevImages => [...prevImages, newImage]);
                 toast.success('Изображение успешно загружено!');
                 onImageSelect();  // Вызовите функцию onImageSelect после успешной загрузки
+                setImageUrl(response.data.imageUrl);
+
             }
         } catch (error) {
             console.error('Error uploading image:', error);

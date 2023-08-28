@@ -5,6 +5,7 @@ import {Button, LinearProgress} from "@mui/material";
 function ImageUploader() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [imageUrl, setImageUrl] = useState(null);
 
     const handleImageChange = (e) => {
         setSelectedImage(e.target.files[0]);
@@ -18,6 +19,7 @@ function ImageUploader() {
         try {
             const response = await axios.post('http://localhost:5001/images/upload', formData);
             console.log('Image URL:', response.data.imageUrl);
+            setImageUrl(response.data.imageUrl);
             setLoading(false);
         } catch (error) {
             console.error("Error uploading image:", error);
@@ -32,6 +34,7 @@ function ImageUploader() {
                 Загрузить
             </Button>
             {loading && <LinearProgress />}
+            {imageUrl && <img src={imageUrl} alt="Uploaded" style={{ width: '100%', marginTop: '20px' }} />}
         </div>
     );
 }

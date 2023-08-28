@@ -133,6 +133,13 @@ const AdminsCategories = () => {
             <Typography>
                 Категории товаров
             </Typography>
+
+            <Box sx={{marginTop: 2}}>
+                <Button variant="contained" color="primary" onClick={handleAddClick}  style={{ marginBottom: '20px', position: 'relative' }}>
+                    Добавить категорию
+                </Button>
+            </Box>
+
             <List dense={false}>
                 {categories.map((category) => (
                     <ListItem
@@ -174,9 +181,7 @@ const AdminsCategories = () => {
                     </ListItem>
                 ))}
             </List>
-            <Button variant="contained" color="primary" onClick={handleAddClick}  style={{ marginBottom: '20px' }}>
-                Добавить категорию
-            </Button>
+
             {availableImages.length > 0 && (
                 <CategoryModal
                     open={modalOpen}
