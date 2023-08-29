@@ -1,4 +1,4 @@
-import {Card, CardActionArea, CardContent, CardMedia, Typography} from "@mui/material";
+import {Box, Card, CardActionArea, CardContent, CardMedia, Typography} from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 
 const ProductCard = ({ product }) => {
@@ -10,18 +10,20 @@ const ProductCard = ({ product }) => {
     };
 
     return (
-        <Card onClick={() => handleCardClick(product._id)} style={{ width: '240px', cursor: 'pointer' }}>
+        <Card onClick={() => handleCardClick(product._id)} sx={{ minHeight: 250, cursor: 'pointer' }}>
             <CardActionArea>
                 <CardMedia
                     component="img"
-                    height="140"
+                    sx={{ height: 180 }} // фиксированная высота
                     image={`${process.env.REACT_APP_BASE_URL}${product.mainImage}`}
                     alt={product.title}
                 />
                 <CardContent>
-                    <Typography component="div">
-                        {product.title}
-                    </Typography>
+                    <Box sx={{ height: 50, overflow: 'hidden', textOverflow: 'ellipsis' }}> {/* ограничение высоты и текста */}
+                        <Typography sx={{ textAlign: 'center' }} component="div">
+                            {product.title}
+                        </Typography>
+                    </Box>
                 </CardContent>
             </CardActionArea>
         </Card>

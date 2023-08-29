@@ -26,9 +26,12 @@ const Breadcrumbs = () => {
     }, {});
     const combinedPathNamesMap = { ...pathNamesMap, ...subCategoriesMap };
 
-
     const location = useLocation();
     const pathnames = location.pathname.split("/").filter((x) => x);
+
+    if (pathnames[0] === 'admin') {
+        return null;
+    }
 
     return (
         <Container maxWidth={'lg'} sx={{marginTop: 3, marginBottom: 2}}>

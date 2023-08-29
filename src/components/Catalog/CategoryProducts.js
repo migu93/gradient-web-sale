@@ -1,9 +1,11 @@
 import { useParams } from 'react-router-dom';
-import {Container, Grid, Typography} from "@mui/material";
+import {Box, Container, Grid, Typography} from "@mui/material";
 import subCategoriesMap from "../../utils/subCategoriesMap";
 import React, { useState, useEffect } from 'react';
 import ProductCard from "./ProductCard";
 import CategoryList from "./CategoryList";
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 const CategoryProducts = () => {
     const [products, setProducts] = useState([]);
@@ -32,7 +34,9 @@ const CategoryProducts = () => {
         <Container maxWidth={'lg'}>
             <Typography variant={'h4'}>{categoryName}</Typography>
             {loading ? (
-                <Typography>Loading...</Typography>
+                <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+                    <CircularProgress />
+                </Box>
             ) : (
                 <Grid container spacing={3}>
                     {/* Колонка для CategoryList */}

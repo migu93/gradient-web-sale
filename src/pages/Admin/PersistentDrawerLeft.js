@@ -12,29 +12,21 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import CategoryIcon from '@mui/icons-material/Category';
-import {useState} from "react";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';import {useState} from "react";
 import AdminsCategories from "./AdminsCategories";
 import ImageUploader from "./ImageUploader";
+import WorkWithProducts from "./Products/WorkWithProducts";
+import CategoryIcon from '@mui/icons-material/Category';
 
 const drawerWidth = 240;
 
 const menuItems = [
-    { text: 'Категории товаров', icon: <InboxIcon /> },
-    { text: 'В разработке', icon: <MailIcon /> },
-    { text: 'В разработке', icon: <MailIcon /> },
-    { text: 'В разработке', icon: <MailIcon /> },
-];
-
-const menuItems2 = [
-    { text: 'В разработке', icon: <InboxIcon /> },
-    { text: 'В разработке', icon: <MailIcon /> },
-    { text: 'В разработке', icon: <MailIcon /> },
-    { text: 'В разработке', icon: <MailIcon /> },
+    { text: 'Категории товаров', icon: <CategoryIcon /> },
+    { text: 'Загрузка изображений', icon: <InboxIcon /> },
+    { text: 'Товары', icon: <ShoppingCartIcon /> },
 ];
 
 function ResponsiveDrawer(props) {
@@ -49,7 +41,7 @@ function ResponsiveDrawer(props) {
         switch (activeIndex) {
             case 0: return <AdminsCategories/>;
             case 1: return <ImageUploader/>;
-
+            case 2: return <WorkWithProducts/>;
             default: return null;
         }
     };

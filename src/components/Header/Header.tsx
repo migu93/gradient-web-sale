@@ -5,10 +5,10 @@ import NadBar from "./NadBar"; // Путь к вашему логотипу
 
 const Header: React.FC = () => {
   return (
-    <div style={{marginLeft: 0}}>
+    <header style={{marginLeft: 0, marginRight: 0}}>
         <NadBar/>
       <NavMenu/>
-    </div>
+    </header>
   );
 }
 

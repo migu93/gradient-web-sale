@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {Collapse, List, ListItem, ListItemText, ListSubheader} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
 
 const CategoryList = () => {
     const [categories, setCategories] = useState([]);
