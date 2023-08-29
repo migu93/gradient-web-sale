@@ -1,28 +1,57 @@
-// CategoryProducts.js
-import React from 'react';
 import { useParams } from 'react-router-dom';
-import {Container, Typography} from "@mui/material";
+import {Container, Grid, Typography} from "@mui/material";
 import subCategoriesMap from "../../utils/subCategoriesMap";
+import React, { useState, useEffect } from 'react';
+import ProductCard from "./ProductCard";
+import CategoryList from "./CategoryList";
 
 const CategoryProducts = () => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const { categoryId } = useParams();
     const { categoryUrl } = useParams();
     const categoryName = subCategoriesMap[categoryUrl] || categoryUrl;
 
-    // В реальном приложении вы бы получали список товаров из API на основе categoryUrl
-    const products = [
-        { id: 1, name: 'Рулетка 1' },
-        { id: 2, name: 'Рулетка 2' },
-        // ... другие товары
-    ];
+    useEffect(() => {
+        fetch(`${process.env.REACT_APP_BASE_URL}/api/products/get-by-category-url/${categoryUrl}`)
+            .then(response => response.json())
+            .then(data => {
+                setProducts(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("Error fetching products:", error);
+                setLoading(false);
+            });
+    }, [categoryId]);
+
+
 
     return (
         <Container maxWidth={'lg'}>
             <Typography variant={'h4'}>{categoryName}</Typography>
-            <ul>
-                {products.map(product => (
-                    <li key={product.id}>{product.name}</li>
-                ))}
-            </ul>
+            {loading ? (
+                <Typography>Loading...</Typography>
+            ) : (
+                <Grid container spacing={3}>
+                    {/* Колонка для CategoryList */}
+                    <Grid item xs={12} sm={4} md={3}>
+                        <CategoryList />
+                    </Grid>
+
+                    {/* Колонка для продуктов */}
+                    <Grid item xs={12} sm={8} md={9}>
+                        <Grid container spacing={3}>
+                            {products.map(product => (
+                                <Grid item xs={12} sm={6} md={4} key={product._id}>
+                                    <ProductCard product={product} />
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Grid>
+                </Grid>
+            )}
         </Container>
     );
 };

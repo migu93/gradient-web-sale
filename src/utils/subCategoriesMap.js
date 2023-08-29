@@ -1,6 +1,7 @@
 const subCategoriesMap = {
     roulette: 'Рулетки',
-    levels: 'Нивелиры'
+    levels: 'Нивелиры',
+    product: 'Товары'
 };
 
 export default subCategoriesMap;
