@@ -11,6 +11,10 @@ import {
     Tooltip, useMediaQuery, Checkbox, Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText
 } from '@mui/material';
 import axios from 'axios';
+import EditIcon from '@mui/icons-material/Edit';
+import EditProductDialog from "./EditProductDialog";
+import {ToastContainer} from "react-toastify";
+
 
 const ProductsTable = () => {
 
@@ -18,6 +22,10 @@ const ProductsTable = () => {
     const [products, setProducts] = useState([]);
     const [open, setOpen] = useState(false);
     const [productToDelete, setProductToDelete] = useState(null);
+    const [editingProduct, setEditingProduct] = useState(null);
+
+    const [openEdit, setOpenEdit] = useState(false); // для диалога редактирования
+    const [openDelete, setOpenDelete] = useState(false); // для диалога удаления
 
     useEffect(() => {
         // Загрузка товаров с сервера
@@ -33,6 +41,36 @@ const ProductsTable = () => {
         return (str.length > n) ? str.substr(0, n-1) + '...' : str;
     };
 
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const handleEdit = (product) => {
+        console.log("Editing product:", product);
+        setEditingProduct(product);
+        setOpenEdit(true);
+    };
+
+    const handleCloseEdit = () => {
+        setOpenEdit(false);
+    };
+
+    const handleOpenDelete = () => {
+        setOpenDelete(true);
+    };
+
+
+    const handleSave = (updatedProduct) => {
+        // Обновляем локальное состояние
+        setProducts(prevProducts => {
+            return prevProducts.map(product =>
+                product._id === updatedProduct._id ? updatedProduct : product
+            );
+        });
+        // Закрываем диалоговое окно
+        setOpenEdit(false);
+    };
+
     const handleSelect = (event, id) => {
         setSelected(prevSelected => ({
             ...prevSelected,
@@ -40,10 +78,6 @@ const ProductsTable = () => {
         }));
     };
 
-    const handleOpenDialog = (product) => {
-        setProductToDelete(product);
-        setOpen(true);
-    };
 
     const handleCloseDialog = () => {
         setOpen(false);
@@ -113,7 +147,12 @@ const ProductsTable = () => {
                                     <TableCell>{product.shortDescription}</TableCell>
                                     <TableCell>{product.detailedDescription}</TableCell>
                                     <TableCell>{product.application.join(', ')}</TableCell>
-                                    <TableCell><img src={product.mainImage} alt={product.title} width="50" /></TableCell>
+                                    <TableCell><img src={`${process.env.REACT_APP_BASE_URL}${product.mainImage}`} alt={product.title} width={100} /></TableCell>
+                                    <TableCell>
+                                        <Button variant="contained" color="primary" onClick={() => handleEdit(product)}>
+                                            <EditIcon/>
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -139,6 +178,14 @@ const ProductsTable = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            <EditProductDialog
+                open={openEdit}
+                onClose={handleCloseEdit}
+                onSave={handleSave}
+                product={editingProduct}
+            />
+            <ToastContainer />
         </>
     );
 };
