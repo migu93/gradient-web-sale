@@ -1,6 +1,6 @@
 // ProductDetails.js
 import React, {useEffect, useState} from 'react';
-import {Button, Container, Typography} from "@mui/material";
+import {Box, Button, Card, CardContent, CardMedia, Container, Grid, Paper, Typography} from "@mui/material";
 import {Link as RouterLink, useParams} from 'react-router-dom';
 
 const ProductDetails = () => {
@@ -31,30 +31,64 @@ const ProductDetails = () => {
     }
 
     return (
-        <Container maxWidth={'lg'}>
-            <img src={`${process.env.REACT_APP_BASE_URL}${product.mainImage}`} alt={product.title} style={{ width: '200px', maxHeight: '200px', objectFit: 'cover' }} />
-            <Typography variant="h4" gutterBottom>{product.title}</Typography>
-            <Typography variant="subtitle1" gutterBottom>{product.shortDescription}</Typography>
-            <Typography variant="body1" gutterBottom>{product.detailedDescription}</Typography>
+        <Container maxWidth="lg" sx={{ p: 3 }}>
+            <Grid container spacing={3}  display={'flex'}>
+                <Grid item xs={12} md={6}>
+                    <Box justifyContent={'center'}>
+                        <Card sx={{width: 400}}>
+                            <CardMedia
+                                component="img"
+                                width={200}
+                                image={`${process.env.REACT_APP_BASE_URL}${product.mainImage}`}
+                                alt={product.title}
+                            />
+                        </Card>
+                    </Box>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <Typography variant="h5" gutterBottom>
+                        {product.title}
+                    </Typography>
+                    <Typography variant="subtitle1" gutterBottom>
+                        {product.shortDescription}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                        {product.detailedDescription}
+                    </Typography>
+                </Grid>
 
-            <Typography variant="h6" gutterBottom>Применение:</Typography>
-            <ul>
-                {product.application.map((app, index) => (
-                    <li key={index}>{app}</li>
-                ))}
-            </ul>
+                <Grid item xs={12}>
+                    <Typography variant="h6" gutterBottom>
+                        Применение:
+                    </Typography>
+                    <ul>
+                        {product.application.map((app, index) => (
+                            <li key={index}>{app}</li>
+                        ))}
+                    </ul>
+                </Grid>
 
-            <Typography variant="h6" gutterBottom>Документы и файлы:</Typography>
-            <ul>
-                {product.documentsAndFiles.map((doc, index) => (
-                    <li key={index}>
-                        <a href={doc} target="_blank" rel="noopener noreferrer">Документ {index + 1}</a>
-                    </li>
-                ))}
-            </ul>
-            <Button component={RouterLink} to={'/catalog'} color="inherit" variant="text">
-                <Typography textAlign="center">Вернуться к каталогу</Typography>
-            </Button>
+                <Grid item xs={12}>
+                    <Typography variant="h6" gutterBottom>
+                        Документы и файлы:
+                    </Typography>
+                    <ul>
+                        {product.documentsAndFiles.map((doc, index) => (
+                            <li key={index}>
+                                <a href={doc} target="_blank" rel="noopener noreferrer">
+                                    Документ {index + 1}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </Grid>
+
+                <Grid item xs={12} sx={{ mt: 2, textAlign: 'center' }}>
+                    <Button component={RouterLink} to="/catalog" variant="contained" color="primary">
+                        Вернуться к каталогу
+                    </Button>
+                </Grid>
+            </Grid>
         </Container>
     );
 };

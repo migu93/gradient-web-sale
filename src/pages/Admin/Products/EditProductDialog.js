@@ -14,9 +14,10 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import ProductImagePicker from "./ProductImagePicker";
 import EditIcon from '@mui/icons-material/Edit';
 import UploadIcon from '@mui/icons-material/Upload';
+import defoultImage from "../../../images/defoult-image.jpg";
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-const EditProductDialog = ({ open, onClose, onSave, product }) => {
+const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
     const [localProduct, setLocalProduct] = useState(product);
     const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
@@ -38,8 +39,20 @@ const EditProductDialog = ({ open, onClose, onSave, product }) => {
 
 
     useEffect(() => {
-        setLocalProduct(product);
+        if (product) {
+            setLocalProduct(product);
+        } else {
+            // Инициализация localProduct для нового продукта
+            setLocalProduct({
+                title: '',
+                shortDescription: '',
+                detailedDescription: '',
+                application: [],
+                mainImage: ''
+            });
+        }
     }, [product]);
+
 
     const handleChange = (field) => (event) => {
         let value = event.target.value;
@@ -56,23 +69,58 @@ const EditProductDialog = ({ open, onClose, onSave, product }) => {
     };
 
     const handleSave = () => {
-        axios.put(`${BASE_URL}/api/products/update/${localProduct._id}`, localProduct)
-            .then(response => {
-                onSave(localProduct);
-                toast.success("Товар успешно обновлен!");  // Уведомление об успехе
-            })
-            .catch(error => {
-                console.error('There was an error updating the product!', error);
-                toast.error("Ошибка при обновлении товара.");  // Уведомление об ошибке
-            });
+        if (!localProduct) {
+            toast.error("Ошибка, товар не выбран или не создан");
+            return;
+        }
+
+        const requiredFields = ['title', 'shortDescription', 'detailedDescription', 'application', 'mainImage'];
+        for (const field of requiredFields) {
+            if (!localProduct[field]) {
+                toast.error(`Ошибка, вы не заполнили поле ${field}`);
+                return;
+            }
+        }
+
+        if (isEditing) {
+            // Логика для обновления существующего товара
+            axios.put(`${BASE_URL}/api/products/update/${localProduct._id}`, localProduct)
+                .then(response => {
+                    onSave(localProduct);
+                    toast.success("Товар успешно обновлен!");
+                })
+                .catch(error => {
+                    console.error('There was an error updating the product!', error);
+                    toast.error("Ошибка при обновлении товара.");
+                });
+        } else {
+            // Логика для создания нового товара
+            axios.post(`${BASE_URL}/api/products/create`, localProduct)
+                .then(response => {
+                    onSave(localProduct);
+                    toast.success("Товар успешно создан!");
+                })
+                .catch(error => {
+                    console.error('There was an error creating the product!', error);
+                    toast.error("Ошибка при создании товара.");
+                });
+        }
         onClose();
     };
 
+
     const handleAddApplication = () => {
-        setLocalProduct({
-            ...localProduct,
-            application: [...localProduct.application, '']
-        });
+        if (!localProduct.application) {
+            setLocalProduct({
+                ...localProduct,
+                application: ['']
+            });
+        } else {
+            setLocalProduct({
+                ...localProduct,
+                application: [...localProduct.application, '']
+            });
+        }
     };
 
     const handleRemoveApplication = (index) => {
@@ -96,7 +144,7 @@ const EditProductDialog = ({ open, onClose, onSave, product }) => {
     return (
         <>
             <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-                <DialogTitle>Редактировать товар</DialogTitle>
+                <DialogTitle>{isEditing ? "Редактировать товар" : "Добавить новый товар"}</DialogTitle>
                 <DialogContent>
                     <Box mb={2}>
                         <TextField
@@ -133,7 +181,6 @@ const EditProductDialog = ({ open, onClose, onSave, product }) => {
                         <Button variant="contained" color="primary" onClick={handleAddApplication}>
                              Добавить применение <AddIcon sx={{marginLeft: 1, width: 20}} />
                         </Button>
-
                     </Box>
 
                     {localProduct?.application?.map((app, index) => (
@@ -150,14 +197,15 @@ const EditProductDialog = ({ open, onClose, onSave, product }) => {
                         </Box>
                     ))}
                     <Typography>Текущее изображение:</Typography>
-                    <Box mb={2} display={'flex'}>
-
-                        <img src={`${BASE_URL}${localProduct?.mainImage}`} alt="Current Image" width="130" />
-
-                        <Box margin={2}>
-                            <Button variant="contained" color="primary" onClick={handleOpenImagePicker}>
-                                Редактировать
-                                 <EditIcon sx={{marginLeft: 1, width: 20}}/>
+                    <Box position="relative" width={190}>
+                        <img
+                            src={product?.mainImage ? `${process.env.REACT_APP_BASE_URL}${product.mainImage}` : defoultImage}
+                            alt="Current Image"
+                            width="190"
+                        />
+                        <Box sx={{ position: 'absolute', top: 0, right: 0 }}>
+                            <Button variant="outlined" color="primary" onClick={handleOpenImagePicker}>
+                                <EditIcon sx={{ width: 20 }} />
                             </Button>
                         </Box>
                     </Box>
