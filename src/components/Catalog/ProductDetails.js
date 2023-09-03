@@ -34,8 +34,8 @@ const ProductDetails = () => {
         <Container maxWidth="lg" sx={{ p: 3 }}>
             <Grid container spacing={3}  display={'flex'}>
                 <Grid item xs={12} md={6}>
-                    <Box justifyContent={'center'}>
-                        <Card sx={{width: 400}}>
+                    <Box display="flex" justifyContent="center">
+                        <Card sx={{ width: 400 }}>
                             <CardMedia
                                 component="img"
                                 width={200}

@@ -46,20 +46,18 @@ const ProductsTable = () => {
         setModalOpen(true);
     };
 
-    const addProduct = async (product) => {
-        const { title, shortDescription, detailedDescription, mainImage, category } = product;
-
+    const addProduct = async ({ title, shortDescription, detailedDescription, mainImage, category }) => {
         if (!title || !shortDescription || !detailedDescription || !mainImage || !category) {
             toast.error('Все поля должны быть заполнены');
             return;
         }
 
         try {
-            const { data, status } = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/products/create`, product);
+            const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/products/create`, { title, shortDescription, detailedDescription, mainImage, category });
 
-            if (status === 200 || status === 201) {
+            if (response.status === 200 || response.status === 201) {
                 toast.success('Товар успешно добавлен');
-                setProducts(prevProducts => [...prevProducts, data]); // Предполагается, что сервер возвращает новый продукт в поле `data`
+                setProducts(prevProducts => [...prevProducts, response.data]);
             } else {
                 toast.error('Что-то пошло не так');
             }
@@ -137,24 +135,25 @@ const ProductsTable = () => {
         }
     };
 
-    const handleConfirmDelete = () => {
+    const handleConfirmDelete = async () => {
         const idsToDelete = Object.keys(selected).filter(id => selected[id]);
-        // Здесь можно вызвать API для удаления
-        idsToDelete.forEach(id => {
-            axios.delete(`${process.env.REACT_APP_BASE_URL}/api/products/del/${id}`)
-                .then(() => {
-                    setProducts(products.filter(product => product._id !== id));
-                    setSelected(prevSelected => {
-                        const newSelected = { ...prevSelected };
-                        delete newSelected[id];
-                        return newSelected;
-                    });
-                })
-                .catch(error => {
-                    console.error('There was an error deleting the product!', error);
+
+        if (idsToDelete.length > 0) {
+            try {
+                await Promise.all(idsToDelete.map(id => axios.delete(`${process.env.REACT_APP_BASE_URL}/api/products/del/${id}`)));
+
+                setProducts(prevProducts => prevProducts.filter(product => !idsToDelete.includes(product._id)));
+                setSelected(prevSelected => {
+                    const newSelected = { ...prevSelected };
+                    idsToDelete.forEach(id => delete newSelected[id]);
+                    return newSelected;
                 });
-        });
-        setOpen(false); // Закрываем диалоговое окно
+            } catch (error) {
+                console.error('There was an error deleting the products!', error);
+            }
+        }
+
+        setOpen(false);
     };
     const truncate = (str, n) => {
         return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
