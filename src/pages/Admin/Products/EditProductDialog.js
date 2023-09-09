@@ -14,160 +14,16 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import ProductImagePicker from "./ProductImagePicker";
 import EditIcon from '@mui/icons-material/Edit';
 import defoultImage from "../../../images/defoult-image.jpg";
+import {useProduct} from "./useProduct";
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
-    const [localProduct, setLocalProduct] = useState(product);
-    const [imagePickerOpen, setImagePickerOpen] = useState(false);
-    const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState(null);
-
-
-
-    const handleOpenImagePicker = () => {
-        setImagePickerOpen(true);
-    };
-
-    const handleCloseImagePicker = () => {
-        setImagePickerOpen(false);
-    };
-
-    const handleImageSelect = (imageUrl) => {
-        setLocalProduct({
-            ...localProduct,
-            mainImage: imageUrl
-        });
-        setImagePickerOpen(false);
-    };
-    const handleChangeCategory = (e) => {
-        setSelectedCategory(e.target.value);
-        setLocalProduct({
-            ...localProduct,
-            category: e.target.value
-        });
-    };
-
-
-    useEffect(() => {
-        axios.get(`${BASE_URL}/categories/get-all`)
-            .then(response => {
-                setCategories(response.data);
-            })
-            .catch(error => {
-                console.error('Ошибка при получении категорий:', error);
-                toast.error("Не удалось загрузить категории.");
-            });
-
-        if (product) {
-            setLocalProduct(product);
-            setSelectedCategory(product.category._id); // Используйте ._id здесь
-        } else {
-            // Инициализация по умолчанию
-        }
-    }, [product]);
-
-    useEffect(() => {
-        if (product) {
-            setLocalProduct(product);
-        } else {
-            // Инициализация localProduct для нового продукта
-            setLocalProduct({
-                title: '',
-                shortDescription: '',
-                detailedDescription: '',
-                application: [],
-                mainImage: '',
-            });
-        }
-    }, [product]);
-
-
-    const handleChange = (field) => (event) => {
-        let value = event.target.value;
-
-        // Если поле является "application", преобразуем строку обратно в массив
-        if (field === 'application') {
-            value = value.split(',').map(item => item.trim());
-        }
-
-        setLocalProduct({
-            ...localProduct,
-            [field]: value,
-        });
-    };
-
-    const handleSave = async (categoryData) => {
-        if (!localProduct) {
-            toast.error("Ошибка, товар не выбран или не создан");
-            return;
-        }
-
-        const requiredFields = ['title', 'shortDescription', 'detailedDescription', 'application', 'mainImage'];
-        for (const field of requiredFields) {
-            if (!localProduct[field]) {
-                toast.error(`Ошибка, вы не заполнили поле ${field}`);
-                return;
-            }
-        }
-
-        if (isEditing) {
-            // Логика для обновления существующего товара
-            axios.put(`${BASE_URL}/api/products/update/${localProduct._id}`, localProduct, categoryData)
-                .then(response => {
-                    onSave(localProduct);
-                    toast.success("Товар успешно обновлен!");
-                })
-                .catch(error => {
-                    console.error('There was an error updating the product!', error);
-                    toast.error("Ошибка при обновлении товара.");
-                });
-        } else {
-            // Логика для создания нового товара
-            axios.post(`${BASE_URL}/api/products/create`, localProduct)
-                .then(response => {
-                    onSave(localProduct);
-                    toast.success("Товар успешно создан!");
-                })
-                .catch(error => {
-                    console.error('There was an error creating the product!', error);
-                    toast.error("Ошибка при создании товара.");
-                });
-        }
-        onClose();
-    };
-
-
-    const handleAddApplication = () => {
-        if (!localProduct.application) {
-            setLocalProduct({
-                ...localProduct,
-                application: ['']
-            });
-        } else {
-            setLocalProduct({
-                ...localProduct,
-                application: [...localProduct.application, '']
-            });
-        }
-    };
-
-    const handleRemoveApplication = (index) => {
-        const newApplications = [...localProduct.application];
-        newApplications.splice(index, 1);
-        setLocalProduct({
-            ...localProduct,
-            application: newApplications
-        });
-    };
-
-    const handleChangeApplication = (index, value) => {
-        const newApplications = [...localProduct.application];
-        newApplications[index] = value;
-        setLocalProduct({
-            ...localProduct,
-            application: newApplications
-        });
-    };
+    const {
+        localProduct, categories, selectedCategory, imagePickerOpen,
+        handleOpenImagePicker, handleCloseImagePicker, handleImageSelect,
+        handleChangeCategory, handleChange, handleSave,
+        handleAddApplication, handleRemoveApplication, handleChangeApplication
+    } = useProduct(product, isEditing, onSave, onClose);
 
     return (
         <>
