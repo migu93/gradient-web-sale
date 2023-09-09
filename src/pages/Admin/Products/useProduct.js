@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchCategories, updateProduct, createProduct } from './api';
 import { toast } from "react-toastify";
-import axios from "axios";
 
 export const useProduct = (product, isEditing, onSave, onClose) => {
 
@@ -12,6 +11,7 @@ export const useProduct = (product, isEditing, onSave, onClose) => {
 
     // Открывает выбор изображения для продукта
     const handleOpenImagePicker = () => {
+        console.log('Opening Image Picker');
         setImagePickerOpen(true);
     };
 
@@ -22,10 +22,10 @@ export const useProduct = (product, isEditing, onSave, onClose) => {
 
     // Устанавливает выбранное изображение как основное изображение продукта
     const handleImageSelect = (imageUrl) => {
-        setLocalProduct({
-            ...localProduct,
+        setLocalProduct(prevProduct => ({
+            ...prevProduct,
             mainImage: imageUrl
-        });
+        }));
         setImagePickerOpen(false);
     };
 
@@ -68,17 +68,21 @@ export const useProduct = (product, isEditing, onSave, onClose) => {
                 detailedDescription: '',
                 application: [],
                 mainImage: '',
+                characteristics: {},
             });
         }
     }, [product]);
 
 
     const handleChange = (field) => (event) => {
-        let value = event.target.value;
+        let value;
 
-        // Если поле является "application", преобразуем строку обратно в массив
         if (field === 'application') {
-            value = value.split(',').map(item => item.trim());
+            value = event.target.checked.split(',').map(item => item.trim());
+        } else if (field === 'inStock') {
+            value = !localProduct.inStock;  // Просто меняем значение на противоположное
+        } else {
+            value = event.target.value;
         }
 
         setLocalProduct({
@@ -86,6 +90,7 @@ export const useProduct = (product, isEditing, onSave, onClose) => {
             [field]: value,
         });
     };
+
 
     const handleSave = async (categoryData) => {
         if (!localProduct) {
@@ -160,10 +165,61 @@ export const useProduct = (product, isEditing, onSave, onClose) => {
         });
     };
 
+    const handleAddCharacteristic = () => {
+        setLocalProduct(prev => ({
+            ...prev,
+            characteristics: { ...prev.characteristics, '': '' }
+        }));
+    };
+
+    const handleChangeCharacteristicKey = (index, newKey) => {
+        const entries = Object.entries(localProduct.characteristics);
+        const [currentKey, value] = entries[index];
+
+        setLocalProduct(prev => {
+            if (prev.characteristics[newKey]) { // Проверка на дублирование ключа
+                return prev;
+            }
+
+            const newCharacteristics = { ...prev.characteristics };
+            delete newCharacteristics[currentKey];
+            newCharacteristics[newKey] = value;
+
+            return {
+                ...prev,
+                characteristics: newCharacteristics
+            };
+        });
+    };
+
+
+    const handleChangeCharacteristicValue = (key, newValue) => {
+        // Преобразование первого символа в нижний регистр
+        newValue = newValue.charAt(0).toLowerCase() + newValue.slice(1);
+
+        setLocalProduct(prev => ({
+            ...prev,
+            characteristics: { ...prev.characteristics, [key]: newValue }
+        }));
+    };
+
+    const handleRemoveCharacteristic = (keyToRemove) => {
+        setLocalProduct(prev => {
+            const newCharacteristics = { ...prev.characteristics };
+            delete newCharacteristics[keyToRemove];
+            return {
+                ...prev,
+                characteristics: newCharacteristics
+            };
+        });
+    };
+
+
     return {
         localProduct, categories, selectedCategory,
         handleOpenImagePicker, handleCloseImagePicker, handleImageSelect,
         handleChangeCategory, handleChange, handleSave,
-        handleAddApplication, handleRemoveApplication, handleChangeApplication
+        handleAddApplication, handleRemoveApplication, handleChangeApplication,
+        handleAddCharacteristic, handleChangeCharacteristicKey, handleChangeCharacteristicValue, handleRemoveCharacteristic
     };
 };

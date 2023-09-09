@@ -5,24 +5,23 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    TextField, Box, Typography, MenuItem, Select,
+    TextField, Box, Typography, MenuItem, Select, Checkbox,
 } from '@mui/material';
-import axios from "axios";
-import {toast} from "react-toastify";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ProductImagePicker from "./ProductImagePicker";
 import EditIcon from '@mui/icons-material/Edit';
 import defoultImage from "../../../images/defoult-image.jpg";
 import {useProduct} from "./useProduct";
-const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
     const {
         localProduct, categories, selectedCategory, imagePickerOpen,
         handleOpenImagePicker, handleCloseImagePicker, handleImageSelect,
         handleChangeCategory, handleChange, handleSave,
-        handleAddApplication, handleRemoveApplication, handleChangeApplication
+        handleAddApplication, handleRemoveApplication, handleChangeApplication,
+        handleAddCharacteristic, handleChangeCharacteristicKey, handleChangeCharacteristicValue,
+        handleRemoveCharacteristic,
     } = useProduct(product, isEditing, onSave, onClose);
 
     return (
@@ -107,6 +106,55 @@ const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
                             ))}
                         </Select>
                     </Box>
+
+                    <Box mb={2}>
+                        <TextField
+                            label="Цена"
+                            value={localProduct?.price || ''}
+                            onChange={handleChange('price')}
+                            fullWidth
+                            margin="normal"
+                            type="number"
+                            sx={{ overflowY: "hidden" }}
+                        />
+                    </Box>
+
+                    <Box mb={2}>
+                        <label>Наличие на складе: </label>
+                        <Checkbox
+                            checked={localProduct?.inStock || false}
+                            onChange={e => handleChange('inStock')(e)}
+                            value={localProduct?.inStock || false}
+                        />
+
+                    </Box>
+
+
+                    <Box mb={2} display={'flex'}>
+                        <Button variant="contained" color="primary" onClick={handleAddCharacteristic}>
+                            Добавить характеристику <AddIcon sx={{marginLeft: 1, width: 20}} />
+                        </Button>
+                    </Box>
+
+                    {Object.entries(localProduct?.characteristics || {}).map(([key, value], index) => (
+                        <Box mb={2} key={index} display={'flex'}>
+                            <TextField
+                                label="Ключ"
+                                value={key}
+                                onChange={(e) => handleChangeCharacteristicKey(index, e.target.value)}
+                                fullWidth
+                            />
+                            <TextField
+                                label="Значение"
+                                value={value}
+                                onChange={(e) => handleChangeCharacteristicValue(key, e.target.value)}
+                                fullWidth
+                            />
+                            <Button variant={'contained'} onClick={() => handleRemoveCharacteristic(key)}>
+                                <RemoveIcon />
+                            </Button>
+                        </Box>
+                    ))}
 
                 </DialogContent>
                 <DialogActions>
