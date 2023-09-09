@@ -8,7 +8,7 @@ import {
     TableRow,
     Paper,
     Typography,
-    Tooltip, useMediaQuery, Checkbox, Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText
+    Tooltip, Checkbox, Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText
 } from '@mui/material';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
@@ -20,7 +20,7 @@ import AddProductModal from "./AddProductModal";
 import CircularProgress from "@mui/material/CircularProgress";
 import CategoryFilter from "./CategoryFilter";
 
-const ProductsTable = () => {
+const ProductsTable = ({onCategoryUpdate}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [selected, setSelected] = useState([]);
     const [products, setProducts] = useState([]);

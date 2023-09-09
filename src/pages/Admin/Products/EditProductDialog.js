@@ -5,7 +5,7 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    TextField, Box, IconButton, Grid, Typography,
+    TextField, Box, Typography, MenuItem, Select,
 } from '@mui/material';
 import axios from "axios";
 import {toast} from "react-toastify";
@@ -13,13 +13,16 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ProductImagePicker from "./ProductImagePicker";
 import EditIcon from '@mui/icons-material/Edit';
-import UploadIcon from '@mui/icons-material/Upload';
 import defoultImage from "../../../images/defoult-image.jpg";
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
     const [localProduct, setLocalProduct] = useState(product);
     const [imagePickerOpen, setImagePickerOpen] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+
+
 
     const handleOpenImagePicker = () => {
         setImagePickerOpen(true);
@@ -36,7 +39,32 @@ const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
         });
         setImagePickerOpen(false);
     };
+    const handleChangeCategory = (e) => {
+        setSelectedCategory(e.target.value);
+        setLocalProduct({
+            ...localProduct,
+            category: e.target.value
+        });
+    };
 
+
+    useEffect(() => {
+        axios.get(`${BASE_URL}/categories/get-all`)
+            .then(response => {
+                setCategories(response.data);
+            })
+            .catch(error => {
+                console.error('Ошибка при получении категорий:', error);
+                toast.error("Не удалось загрузить категории.");
+            });
+
+        if (product) {
+            setLocalProduct(product);
+            setSelectedCategory(product.category._id); // Используйте ._id здесь
+        } else {
+            // Инициализация по умолчанию
+        }
+    }, [product]);
 
     useEffect(() => {
         if (product) {
@@ -48,7 +76,7 @@ const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
                 shortDescription: '',
                 detailedDescription: '',
                 application: [],
-                mainImage: ''
+                mainImage: '',
             });
         }
     }, [product]);
@@ -68,7 +96,7 @@ const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
         });
     };
 
-    const handleSave = () => {
+    const handleSave = async (categoryData) => {
         if (!localProduct) {
             toast.error("Ошибка, товар не выбран или не создан");
             return;
@@ -84,7 +112,7 @@ const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
 
         if (isEditing) {
             // Логика для обновления существующего товара
-            axios.put(`${BASE_URL}/api/products/update/${localProduct._id}`, localProduct)
+            axios.put(`${BASE_URL}/api/products/update/${localProduct._id}`, localProduct, categoryData)
                 .then(response => {
                     onSave(localProduct);
                     toast.success("Товар успешно обновлен!");
@@ -209,6 +237,21 @@ const EditProductDialog = ({ open, onClose, onSave, product, isEditing }) => {
                             </Button>
                         </Box>
                     </Box>
+
+                    <Box mb={2} mt={2}>
+                        <Typography>Категория товара:</Typography>
+
+                        <Select
+                            value={selectedCategory}
+                            onChange={handleChangeCategory}
+                            fullWidth
+                        >
+                            {categories.map(category => (
+                                <MenuItem key={category._id} value={category._id}>{category.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </Box>
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose} variant={'contained'} color="primary">
